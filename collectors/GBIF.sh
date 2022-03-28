@@ -16,4 +16,4 @@ done
 download_link=$(echo $request | jq .downloadLink | tr -d '"')
 zipfile="gbif$version-$download_key.zip"
 echo Downloading $download_link to $zipfile
-curl $download_link | ~/BDM_Software/hadoop/bin/hdfs dfs -put -f - $zipfile
+curl $download_link -L | ~/BDM_Software/hadoop/bin/hdfs dfs -put -f - $zipfile
