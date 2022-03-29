@@ -4,7 +4,7 @@
       "diogo.repas@estudiantat.upc.edu"
     ],
     "sendNotification": false,
-    "format": "DWCA",
+    "format": "SIMPLE_PARQUET",
     "predicate": {
       "type": "and",
       "predicates": [
