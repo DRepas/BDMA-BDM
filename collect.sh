@@ -1,13 +1,10 @@
 #!/bin/bash
 
-export TEMP_LANDING_ZONE="/user/bdm/tmp"
-export GBIF_CREDS="diogo.repas.upc:Dade6cVRmB#5eJ"
-
 cd collectors
 
 # Run in parallel and dettached from this shell (allow closing terminal while running)
-nohup sh -c "./GBIF.sh" &> /tmp/GBIF_collect.log &
-nohup sh -c "./WorldClim.sh" &> /tmp/WorldClim_collect.log &
+nohup python3 GBIF.py &> /tmp/GBIF_collect.log &
+nohup python3 WorldClim.py &> /tmp/WorldClim_collect.log &
 
 cd ..
 

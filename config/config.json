@@ -1,0 +1,50 @@
+{
+    "hdfs": {
+        "url": "http://localhost:9870",
+        "user": "bdm",
+        "chunk_size": 1048576,
+        "paths": {
+            "landing": {
+                "temporary": "temporary",
+                "persistent": "persistent"
+            }
+        }
+    },
+    "worldclim": {
+        "source": "worldclim",
+        "version": "2.1",
+        "resolutions": ["10m", "5m", "2.5m", "30s"],
+        "variables": ["tmin", "tmax", "tavg", "prec", "srad", "wind", "vapr", "bio", "elev"]
+    },
+    "gbif": {
+        "source": "gbif",
+        "version": "1",
+        "username": "diogo.repas.upc",
+        "password": "Dade6cVRmB#5eJ",
+        "query": {
+            "creator": "diogo.repas.upc",
+            "notificationAddresses": [],
+            "sendNotification": false,
+            "format": "SIMPLE_PARQUET",
+            "predicate": {
+                "type": "and",
+                "predicates": [
+                    {
+                        "type": "in",
+                        "key": "GADM_GID",
+                        "values": [
+                            "MEX.31_1",
+                            "MEX.4_1",
+                            "MEX.23_1"
+                        ]
+                    },
+                    {
+                        "type": "equals",
+                        "key": "HAS_COORDINATE",
+                        "value": true
+                    }
+                ]
+            }
+        }
+    }
+}
