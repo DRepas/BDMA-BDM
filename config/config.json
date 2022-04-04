@@ -81,5 +81,9 @@
                 ]
             }
         }
+    },
+    "nasa" : {
+        "source": "nasa",
+        "version": "1"
     }
 }
