@@ -36,6 +36,7 @@ outdir = '{}/{}/{}'.format(
 client.makedirs(outdir)
 
 # Perform download request
+print("Requesting download")
 download_key = requests.post(
     'https://api.gbif.org/v{}/occurrence/download/request'
     .format(cfg.gbif.version),
@@ -43,6 +44,7 @@ download_key = requests.post(
     auth=(cfg.gbif.username, cfg.gbif.password),
     headers={"Content-Type": "application/json"}
 ).text
+print("Got key:", download_key)
 
 # Actively wait for download to be done (ping every 10s)
 download_status_link = 'https://api.gbif.org/v{}/occurrence/download/{}'.format(
@@ -74,3 +76,4 @@ client.write(
     data=download.iter_content(chunk_size=cfg.hdfs.chunk_size),
     overwrite=True
 )
+print('Done!')

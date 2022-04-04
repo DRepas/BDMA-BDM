@@ -2,13 +2,48 @@
     "hdfs": {
         "url": "http://localhost:9870",
         "user": "bdm",
-        "chunk_size": 1048576,
+        "chunk_size": 134217728,
         "paths": {
             "landing": {
                 "temporary": "temporary",
                 "persistent": "persistent"
             }
         }
+    },
+    "neo": {
+        "source": "neo",
+        "datasets": [
+            {
+                "name": "MOD_LSTD_M",
+                "dates": {
+                    "start": "2000-02",
+                    "end": "2022-02",
+                    "format": "%Y-%m",
+                    "freq": "MONTHLY",
+                    "increment": 1
+                }
+            },
+            {
+                "name": "MOD_LSTD_E",
+                "dates": {
+                    "start": "2000-02-18",
+                    "end": "2022-03-14",
+                    "format": "%Y-%m-%d",
+                    "freq": "DAILY",
+                    "increment": 8
+                }
+            },  
+            {
+                "name": "MOD_LSTD_E",
+                "dates": {
+                    "start": "2000-02-24",
+                    "end": "2022-03-30",
+                    "format": "%Y-%m-%d",
+                    "freq": "DAILY",
+                    "increment": 1
+                }
+            }
+        ]
     },
     "worldclim": {
         "source": "worldclim",

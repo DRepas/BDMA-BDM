@@ -20,14 +20,14 @@ def rmdir(directory):
     path.rmdir()
 
 
-# Setup RasterFrames
-spark = create_rf_spark_session()
-
 # Load configuration
 with open('../config/config.json', 'r') as f:
     cfg = json.load(f, object_hook=lambda d: SimpleNamespace(**d))
 
-# Setup client
+# Setup RasterFrames
+spark = create_rf_spark_session()
+
+# Setup HDFS client
 client = InsecureClient(cfg.hdfs.url, user=cfg.hdfs.user)
 
 # Find all downloads in temporal landing zone
@@ -46,7 +46,7 @@ for zipfile in zipfiles:
     print("Handling", resolution, variable)
 
     # Create timestamped local and persistent (HDFS) directories
-    timestamp=datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     outdir = '{}/{}/{}/{}'.format(
         cfg.hdfs.paths.landing.persistent, 
         cfg.worldclim.source,
