@@ -30,26 +30,6 @@
                     "freq": "MONTHLY",
                     "increment": 1
                 }
-            },
-            {
-                "name": "MOD_LSTD_E",
-                "dates": {
-                    "start": "2000-02-18",
-                    "end": "2022-03-14",
-                    "format": "%Y-%m-%d",
-                    "freq": "DAILY",
-                    "increment": 8
-                }
-            },  
-            {
-                "name": "MOD_LSTD_E",
-                "dates": {
-                    "start": "2000-02-24",
-                    "end": "2022-03-30",
-                    "format": "%Y-%m-%d",
-                    "freq": "DAILY",
-                    "increment": 1
-                }
             }
         ]
     },
@@ -89,9 +69,5 @@
                 ]
             }
         }
-    },
-    "nasa" : {
-        "source": "nasa",
-        "version": "1"
     }
 }
