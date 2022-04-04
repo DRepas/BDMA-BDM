@@ -17,6 +17,7 @@ client = InsecureClient(cfg.hdfs.url, user=cfg.hdfs.user)
 
 # Iterate datasets
 for dataset in cfg.neo.datasets:
+    
     # Create output directory in HDFS
     outdir = '{}/{}/{}'.format(
         cfg.hdfs.paths.landing.temporary, 
@@ -24,15 +25,20 @@ for dataset in cfg.neo.datasets:
         dataset.name
     )
     client.makedirs(outdir)
+
     # Iterate through dates
     start = datetime.strptime(dataset.dates.start, dataset.dates.format)
     end = datetime.strptime(dataset.dates.end, dataset.dates.format)
-    if dataset.dates.freq == "MONTHLY":
+    
+    freq = DAILY
+    if hasattr(dataset.dates, 'freq') and dataset.dates.freq == "MONTHLY":
         freq = MONTHLY
-    elif dataset.dates.freq == "DAILY":
-        freq = DAILY
+
     dates = rrule(freq, dtstart=start, until=end)
-    for date_obj in dates[::dataset.dates.increment]:
+    if hasattr(dataset.dates, 'increment'):
+        dates = dates[::dataset.dates.increment]
+
+    for date_obj in dates:
         date = date_obj.strftime(dataset.dates.format)
         filename = '{}_{}.FLOAT.TIFF'.format(dataset.name, date)
         outfile = '{}/{}'.format(outdir, filename)

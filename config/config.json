@@ -14,6 +14,14 @@
         "source": "neo",
         "datasets": [
             {
+                "name": "SRTM_RAMP2_TOPO",
+                "dates": {
+                    "start": "2000",
+                    "end": "2000",
+                    "format": "%Y"
+                }
+            },
+            {
                 "name": "MOD_LSTD_M",
                 "dates": {
                     "start": "2000-02",

@@ -68,7 +68,7 @@ for dataset in cfg.neo.datasets[:1]:
         print("Handling {} ({})".format(dataset.name, date))
 
         # NOTE: RasterFrames should be able to read/write directly from HDFS
-        #       without requiring downloads
+        #       without requiring downloads. I/O could be saved that way.
 
         # Download from HDFS to local file system
         print(
