@@ -90,5 +90,17 @@
             "min_lon": -93,
             "max_lon": -86
         }
+    },
+    "formatters": {
+        "species_rasters": {
+            "psql": {
+                "jdbc": {
+                    "location": "/usr/local/postgresql-42.2.5.jar",
+                    "url": "jdbc:postgresql://localhost:5432/species_rasters"
+                },
+                "user": "postgres",
+                "password": "postgres"
+            }
+        }
     }
 }
