@@ -31,7 +31,7 @@ spark = create_rf_spark_session()
 client = InsecureClient(cfg.hdfs.url, user=cfg.hdfs.user)
 
 # Iterate datasets
-for dataset in cfg.neo.datasets[:1]:
+for dataset in cfg.neo.datasets:
 
     # Find all downloads in temporal landing zone
     tmpdir = '{}/{}/{}'.format(
@@ -105,4 +105,4 @@ for dataset in cfg.neo.datasets[:1]:
     # Remove artifacts (local and hdfs)
     print("Cleaning up temporary files")
     rmdir(localdir)
-    client.delete(tmpdir)
+    # client.delete(tmpdir)

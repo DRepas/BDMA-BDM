@@ -1,5 +1,6 @@
 {
     "hdfs": {
+        "dfs": "hdfs://pikachu.fib.upc.es:27000/user/bdm/",
         "url": "http://localhost:9870",
         "user": "bdm",
         "chunk_size": 134217728,
@@ -68,6 +69,26 @@
                     }
                 ]
             }
+        }
+    },
+    "swd": {
+        "species_of_interest": [
+            "Phocoena sinus",
+            "Dermochelys coriacea",
+            "Canis lupus baileyi",
+            "Ambystoma mexicanum",
+            "Ara macao",
+            "Danaus plexippus",
+            "Acropora palmata",
+            "Isostichopus fuscus",
+            "Lycaste skinneri",
+            "Panthera onca"
+        ],
+        "extent": {
+            "min_lat": 17,
+            "max_lat": 23,
+            "min_lon": -93,
+            "max_lon": -86
         }
     }
 }

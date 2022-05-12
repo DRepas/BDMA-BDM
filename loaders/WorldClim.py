@@ -41,8 +41,8 @@ zipfiles=client.list(tmpdir)
 for zipfile in zipfiles:
     
     # Extract resolution and variable from filename
-    resolution=zipfile.split('.')[0].split('_')[0]
-    variable=zipfile.split('.')[0].split('_')[1]
+    resolution=zipfile.split('.zip')[0].split('_')[0]
+    variable=zipfile.split('.zip')[0].split('_')[1]
     print("Handling", resolution, variable)
 
     # Create timestamped local and persistent (HDFS) directories
@@ -118,4 +118,4 @@ for zipfile in zipfiles:
     # Remove redundant zip files (local and hdfs)
     print("Cleaning up temporary files")
     rmdir(localdir)
-    client.delete("{}/{}".format(tmpdir, zipfile))
+    # client.delete("{}/{}".format(tmpdir, zipfile))

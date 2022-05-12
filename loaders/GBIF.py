@@ -95,4 +95,4 @@ for zipfile in zipfiles:
     # Remove redundant zip files (local and hdfs)
     print("Cleaning up temporary files")
     rmdir(localdir)
-    #client.delete("{}/{}".format(tmpdir, zipfile))
+    # client.delete("{}/{}".format(tmpdir, zipfile))
