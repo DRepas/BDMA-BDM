@@ -30,6 +30,24 @@ spark = create_rf_spark_session()
 # Setup HDFS client
 client = InsecureClient(cfg.hdfs.url, user=cfg.hdfs.user)
 
+# Timestamp this loading operation
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+# Create timestamped local and persistent (HDFS) directories
+outdir = '{}/{}/{}/{}'.format(
+    cfg.hdfs.paths.landing.persistent, 
+    cfg.worldclim.source,
+    cfg.worldclim.version,
+    timestamp
+)
+localdir = '/tmp/{}/{}/{}'.format(
+    cfg.worldclim.source,
+    cfg.worldclim.version,
+    timestamp
+)
+client.makedirs(outdir)
+Path(localdir).mkdir(parents=True, exist_ok=True)
+
 # Find all downloads in temporal landing zone
 tmpdir = '{}/{}/{}'.format(
     cfg.hdfs.paths.landing.temporary, 
@@ -45,29 +63,14 @@ for zipfile in zipfiles:
     variable=zipfile.split('.zip')[0].split('_')[1]
     print("Handling", resolution, variable)
 
-    # Create timestamped local and persistent (HDFS) directories
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    outdir = '{}/{}/{}/{}'.format(
-        cfg.hdfs.paths.landing.persistent, 
-        cfg.worldclim.source,
-        cfg.worldclim.version,
-        timestamp
-    )
-    localdir = '/tmp/{}/{}/{}'.format(
-        cfg.worldclim.source,
-        cfg.worldclim.version,
-        timestamp
-    )
-    client.makedirs(outdir)
-    Path(localdir).mkdir(parents=True, exist_ok=True)
-
     # Download from HDFS to local file system
     print(
         "Downloading", 
-        "hdfs://{}/{}".format(tmpdir, zipfile), 
+        "{}{}/{}".format(cfg.hdfs.dfs, tmpdir, zipfile), 
         "to", 
         "{}/{}".format(localdir, zipfile)
     )
+    Path(localdir).mkdir(parents=True, exist_ok=True)
     client.download(
         "{}/{}".format(tmpdir, zipfile), 
         "{}/{}".format(localdir, zipfile), 
@@ -96,26 +99,24 @@ for zipfile in zipfiles:
             continue
 
         print("Parsing", geotiff)
+        
+        # Upload contents to HDFS
+        band=str(geotiff).split('_')[-1].split('.')[0]
+        hdfs_path_tif="{}/{}/{}/{}.{}".format(outdir, resolution, variable, band, "tif")
+        print("Uploading to", hdfs_path_tif)
+        client.upload(hdfs_path_tif, str(geotiff))
 
         # Read files into RasterFrames
         rf = spark.read.raster(str(geotiff))
 
         # Convert to parquet
-        band=str(geotiff).split('_')[-1].split('.')[0]
-        localfile="{}/{}_{}_{}.pq".format(localdir, resolution, variable, band)
-        hdfs_path="{}/{}/{}/{}.pq".format(outdir, resolution, variable, band)
-        rf.write.parquet(localfile)
+        hdfs_path_pq="{}{}/{}/{}/{}.{}".format(cfg.hdfs.dfs, outdir, resolution, variable, band, "pq")
 
         # Upload contents to HDFS
-        print(
-            "Uploading",
-            localfile,
-            "to", 
-            "hdfs://{}".format(hdfs_path)
-        )
-        client.upload(hdfs_path, localfile)
+        print("Writing to", hdfs_path_pq)
+        rf.write.parquet(hdfs_path_pq)
 
     # Remove redundant zip files (local and hdfs)
-    print("Cleaning up temporary files")
-    rmdir(localdir)
+    # print("Cleaning up temporary files")
+    # rmdir(localdir)
     # client.delete("{}/{}".format(tmpdir, zipfile))

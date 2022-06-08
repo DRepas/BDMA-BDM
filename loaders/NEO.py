@@ -103,6 +103,6 @@ for dataset in cfg.neo.datasets:
         client.upload(hdfs_path, localfile)
 
     # Remove artifacts (local and hdfs)
-    print("Cleaning up temporary files")
-    rmdir(localdir)
+    # print("Cleaning up temporary files")
+    # rmdir(localdir)
     # client.delete(tmpdir)
