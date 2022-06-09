@@ -2,35 +2,44 @@ import json
 
 from types import SimpleNamespace
 
+from hdfs import InsecureClient
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 
 # Load configuration
-with open('../../config/config.json', 'r') as f:
-    cfg = json.load(f, object_hook=lambda d: SimpleNamespace(**d)).formatters.species_rasters
+with open('./config/config.json', 'r') as f:
+    cfg = json.load(f, object_hook=lambda d: SimpleNamespace(**d))
 
-# Cria a sessão e configura o driver do banco
+# Setup client
+client = InsecureClient(cfg.hdfs.url, user=cfg.hdfs.user)
+
+# Create spark session and set up the database driver
 spark = (SparkSession
          .builder
          .config("spark.jars", cfg.psql.jdbc.location)
          .master("local")
          .appName("species_rasters")
+         .enableHiveSupport()
          .getOrCreate())
 
-# tabela exemplo -- remover estes comentários depois
-studentDf = spark.createDataFrame([
-    Row(id=1, name='Luiz', marks=67),
-    Row(id=2, name='Diogo', marks=88),
-    Row(id=3, name='Nicole', marks=79),
-    Row(id=4, name='Andres', marks=67),
-])
+# Read files from HDFS
+background = spark.read.csv("hdfs://pikachu.fib.upc.es:27000/user/bdm/swd/background.csv", header=True)
+samples = spark.read.csv("hdfs://pikachu.fib.upc.es:27000/user/bdm/swd/samples.csv", header=True)
 
-# Salva o dataframe como tabela (dbtable)
-(studentDf
- .select("id", "name", "marks").write.format("jdbc")  # selecione as colunas aqui
- .option("url", cfg.psql.jdbc.url) # isso não muda
- .option("driver", "org.postgresql.Driver")   # nem isso
- .option("dbtable", "students")   # aqui vc muda o nome da tabela (students)
+# Save the table in the database (dbtable)
+(background
+ .select(background.columns).write.format("jdbc")  
+ .option("url", cfg.psql.jdbc.url) 
+ .option("driver", "org.postgresql.Driver")  
+ .option("dbtable", "background")  
+ .option("user", cfg.psql.user)
+ .option("password", cfg.psql.password)
+ .save())
+
+(samples
+ .select(samples.columns).write.format("jdbc")  
+ .option("url", cfg.psql.jdbc.url)  
+ .option("driver", "org.postgresql.Driver")
+ .option("dbtable", "samples") 
  .option("user", cfg.psql.user)
  .option("password", cfg.psql.password)
  .save())
