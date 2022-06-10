@@ -181,13 +181,51 @@ print("Write to disk...")
 client.makedirs(cfg.hdfs.paths.formatted.swd)
 
 print("Writing background.csv")
-df.select('species', st_x('geometry').alias('longitude'), st_y('geometry').alias('latitude'), *worldclim_catalogs, *neo_catalogs) \
-    .filter(col('species') == lit('background')) \
-    .write.mode('overwrite').option("header", True).csv(cfg.hdfs.dfs + cfg.hdfs.paths.formatted.swd + "/background.csv")
+background_df = (
+    df.select('species', 
+              st_x('geometry').alias('longitude'), 
+              st_y('geometry').alias('latitude'), 
+              *worldclim_catalogs, *neo_catalogs)
+    .filter(col('species') == lit('background'))
+)
+background_df.write.mode('overwrite').option("header", True).csv(cfg.hdfs.dfs + cfg.hdfs.paths.formatted.swd + "/background.csv")
     
 print("Writing samples.csv")
-df.select('species', st_x('geometry').alias('longitude'), st_y('geometry').alias('latitude'), *worldclim_catalogs, *neo_catalogs) \
-    .filter(col('species') != lit('background')) \
-    .write.mode('overwrite').option("header", True).csv(cfg.hdfs.dfs + cfg.hdfs.paths.formatted.swd + "/samples.csv")
-    
+samples_df = (
+    df.select('species', 
+              st_x('geometry').alias('longitude'), 
+              st_y('geometry').alias('latitude'), 
+              *worldclim_catalogs, *neo_catalogs)
+    .filter(col('species') != lit('background'))
+)
+samples_df.write.mode('overwrite').option("header", True).csv(cfg.hdfs.dfs + cfg.hdfs.paths.formatted.swd + "/samples.csv")
+
+# Create spark session and set up the database driver
+from pyspark.sql import SparkSession
+spark = (SparkSession
+         .builder
+         .config("spark.jars", cfg.psql.jdbc.location)
+         .master("local")
+         .appName("species_rasters")
+         .enableHiveSupport()
+         .getOrCreate())
+
+print("Saving to PostgreSQL: background")
+(background_df.write.format("jdbc")  
+ .option("url", cfg.psql.jdbc.url) 
+ .option("driver", "org.postgresql.Driver")  
+ .option("dbtable", "background")  
+ .option("user", cfg.psql.user)
+ .option("password", cfg.psql.password)
+ .save())
+
+print("Saving to PostgreSQL: samples")
+(samples_df.write.format("jdbc")  
+ .option("url", cfg.psql.jdbc.url)  
+ .option("driver", "org.postgresql.Driver")
+ .option("dbtable", "samples") 
+ .option("user", cfg.psql.user)
+ .option("password", cfg.psql.password)
+ .save())
+
 print("Done!")
