@@ -38,7 +38,7 @@ def join_with_raster(df, rf, col_name):
 with open('/home/bdm/repo/config/config.json', 'r') as f:
     cfg = json.load(f, object_hook=lambda d: SimpleNamespace(**d))
 
-# Setup spark
+# Setup spark with RasterFrames
 spark = create_rf_spark_session()
 
 # Setup HDFS client
@@ -211,19 +211,19 @@ spark = (SparkSession
          .getOrCreate())
 
 print("Saving to PostgreSQL: background")
-(background_df.write.format("jdbc")  
- .option("url", cfg.psql.jdbc.url) 
- .option("driver", "org.postgresql.Driver")  
- .option("dbtable", "background")  
+(background_df.write.format("jdbc")
+ .option("url", cfg.psql.jdbc.url)
+ .option("driver", "org.postgresql.Driver")
+ .option("dbtable", "background")
  .option("user", cfg.psql.user)
  .option("password", cfg.psql.password)
  .save())
 
 print("Saving to PostgreSQL: samples")
-(samples_df.write.format("jdbc")  
- .option("url", cfg.psql.jdbc.url)  
+(samples_df.write.format("jdbc")
+ .option("url", cfg.psql.jdbc.url)
  .option("driver", "org.postgresql.Driver")
- .option("dbtable", "samples") 
+ .option("dbtable", "samples")
  .option("user", cfg.psql.user)
  .option("password", cfg.psql.password)
  .save())
